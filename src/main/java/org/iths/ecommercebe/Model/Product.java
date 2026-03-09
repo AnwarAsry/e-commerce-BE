@@ -1,55 +1,70 @@
 package org.iths.ecommercebe.Model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.sql.Date;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 
+@Entity
+@Table(name = "products")
 @Getter
 @Setter
 @NoArgsConstructor
-@Entity
-@Table(name = "products")
+@AllArgsConstructor
+@Builder
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false)
-    private String title;
+    private String name;
+    @Column(columnDefinition = "TEXT")
     private String description;
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal price;
+    @Column(precision = 10, scale = 2)
+    private BigDecimal compareAtPrice;
     @Column(nullable = false)
-    private Double price;
-    @ManyToOne
-    @JoinColumn(name = "brand_id")
-    private Brand brand;
+    private String sku;
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
+    @Column
+    private String subCategory;
+    @ElementCollection
+    @CollectionTable(name = "product_tags", joinColumns = @JoinColumn(name = "product_id"))
+    @Column(name = "tag")
+    private List<String> tags;
+    @Column(nullable = false)
+    private int stockQuantity;
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean inStock = true;
+    @Column
+    private String thumbnailUrl;
+    @ElementCollection
+    @CollectionTable(name = "product_images", joinColumns = @JoinColumn(name = "product_id"))
+    @Column(name = "image_url")
+    private List<String> imageUrls;
+    @Column(nullable = false, precision = 2, scale = 1)
+    @Builder.Default
+    private BigDecimal averageRating = BigDecimal.ZERO;
+    @Column(nullable = false)
+    @Builder.Default
+    private int reviewCount = 0;
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean active = true;
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean featured = false;
     @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
-    private Date createdAt;
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
     @UpdateTimestamp
-    @Column(name = "updated_at")
-    private Date updatedAt;
-
-    public Product(String title, String description, Double price, Brand brand, Category category) {
-        this.title = title;
-        this.description = description;
-        this.price = price;
-        this.brand = brand;
-        this.category = category;
-    }
-
-    public Product(Long id, String title, String description, Double price, Brand brand, Category category) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
-        this.price = price;
-        this.brand = brand;
-        this.category = category;
-    }
+    private LocalDateTime updatedAt;
 }
