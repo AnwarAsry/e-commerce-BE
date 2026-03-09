@@ -18,8 +18,4 @@ public class Category {
     private Long id;
     @Column(nullable = false)
     private String name;
-
-    public Category(String name) {
-        this.name = name;
-    }
 }
